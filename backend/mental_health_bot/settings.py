@@ -1,0 +1,1 @@
+# Django Settings with JWT, CORS, etc.

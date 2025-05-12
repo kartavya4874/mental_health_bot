@@ -1,0 +1,1 @@
+# Full guide to run and deploy the project
