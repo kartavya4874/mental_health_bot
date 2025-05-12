@@ -1,1 +1,15 @@
 # Docker Compose for local deployment
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+

@@ -1,0 +1,8 @@
+Django==4.2
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
+gunicorn==21.2.0
+openai==1.15.0
+langdetect==1.0.9
+corsheaders==3.14.0
+

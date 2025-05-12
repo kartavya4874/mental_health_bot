@@ -1,1 +1,84 @@
 <!-- Frontend UI Template with Tailwind + HTMX -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Chatbot</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-bubble {
+            animation: fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-100 to-purple-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="bg-white shadow-lg rounded-xl w-full max-w-xl p-4 space-y-4">
+        <h1 class="text-2xl font-bold text-center text-purple-700">🌿 Mental Health Chatbot</h1>
+        <div id="chat-area" class="space-y-2 max-h-[500px] overflow-y-auto p-2 border rounded bg-gray-50"></div>
+
+        <form id="chat-form" class="flex gap-2">
+            <input type="text" id="message-input" placeholder="Type your message..." class="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300" required>
+            <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">Send</button>
+        </form>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const chatArea = document.getElementById('chat-area');
+
+        const token = 'YOUR_JWT_TOKEN'; // Replace manually after login
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            addMessage(userMessage, 'user');
+
+            try {
+                const res = await fetch('/api/chat/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                });
+                const data = await res.json();
+                if (data.reply) {
+                    addMessage(data.reply, 'bot');
+                } else {
+                    addMessage("Error: " + JSON.stringify(data), 'bot');
+                }
+            } catch (err) {
+                addMessage("Network error.", 'bot');
+            }
+
+            messageInput.value = '';
+        });
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `chat-bubble p-3 rounded-lg max-w-[80%] ${sender === 'user' ? 'bg-purple-200 self-end ml-auto' : 'bg-green-100 self-start mr-auto'}`;
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+    </script>
+</body>
+</html>
+
